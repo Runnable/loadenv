@@ -62,3 +62,8 @@ resulting output.
 No matter how many times you include the module, the environment is only loaded
 once. So feel free to sprinkle loads wherever they might be needed to make your
 code as modular as possible.
+
+
+## LICENSE
+
+MIT
