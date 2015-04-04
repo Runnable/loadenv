@@ -3,33 +3,56 @@ var lab = exports.lab = Lab.script();
 var describe = lab.describe;
 var it = lab.it;
 var before = lab.before;
+var afterEach = lab.afterEach;
 var Code = require('code');
 var expect = Code.expect;
 
+var sinon = require('sinon');
+var dotenv = require('dotenv');
+var loadenv = require('../index.js');
+
 describe('loadenv', function() {
-  before(function (done) {
-    require('../index.js')();
+  afterEach(function (done) {
+    loadenv.restore();
     done();
   });
 
   it('should load default environment variables', function (done) {
+    loadenv('loadenv', true);
     expect(process.env.DEFAULT_A).to.equal(123);
+    expect(process.env.DEFAULT_B).to.equal('HELLO WORLD');
     expect(process.env.DEFAULT_C).to.equal('E=MC^2');
     done();
   });
 
   it('should load test environment variables', function (done) {
+    loadenv();
     expect(process.env.DEFAULT_B).to.equal('HELLO TEST');
     expect(process.env.SPECIAL_D).to.equal('ONLY IN TEST');
     done();
   });
 
   it('should not load environment after already loaded', function(done) {
+    loadenv();
     var original = process.env.SPECIAL_D;
     process.env.SPECIAL_D = 'different'
-    require('../index.js')();
+    loadenv();
     expect(process.env.SPECIAL_D).to.equal('different');
-    process.env.SPECIAL_D = original;
     done();
+  });
+
+  it('should log a warning if it cannot find an env file', function (done) {
+    sinon.stub(dotenv, 'config', function() {
+      throw new Error('Boom');
+    });
+    var error = null;
+    try {
+      loadenv();
+    }
+    catch (err) {
+      error = err;
+    }
+    dotenv.config.restore();
+    done(error);
   });
 });

@@ -12,11 +12,26 @@ var fs = require('fs');
 var path = require('path');
 var dotenv = require('dotenv');
 var eson = require('eson');
-var execSync = require('exec-sync');
-var applicationRoot = require('app-root-path').toString();
-var env = process.env.NODE_ENV;
 var exists = require('101/exists');
-var async = require('async');
+var clone = require('clone');
+
+/**
+ * Application root directory.
+ * @type {string}
+ */
+var applicationRoot = require('app-root-path').toString();
+
+/**
+ * Specified node environment.
+ * @type {string}
+ */
+var nodeEnv = process.env.NODE_ENV;
+
+/**
+ * Original process.env state. Set on execution for
+ * @type {object}
+ */
+var originalEnv;
 
 /**
  * Ensures that the environment variables will only be loaded the
@@ -29,18 +44,23 @@ var hasLoadedEnvironment = false;
  * Loads environment varibles defined in `config/.env*`.
  * @param {string} [debugName] Name to use when outputting resulting environment
  *  via debug. Defaults to 'loadenv'.
+ * @param {boolean} [ignoreNodeEnv] Flag to ignore loading environment based
+ *  on `NODE_ENV` variable.
  */
-function readDotEnvConfigs(debugName) {
+function readDotEnvConfigs(debugName, ignoreNodeEnv) {
   // Skip if environment has already been loaded.
   if (hasLoadedEnvironment === true) {
     return;
   }
   hasLoadedEnvironment = true;
+  originalEnv = clone(process.env);
 
   var debug = require('debug')(debugName || 'loadenv');
 
   // Load appropriate environment variables from `/configs`
-  loadEnv('.env.' + env);
+  if (!ignoreNodeEnv) {
+    loadEnv('.env.' + nodeEnv);
+  }
   loadEnv('.env');
 
   // Finalize the load
@@ -49,16 +69,6 @@ function readDotEnvConfigs(debugName) {
       return !isNaN(val) ? parseInt(val) : val;
     })
     .parse(JSON.stringify(process.env));
-
-  try {
-    process.env._VERSION_GIT_COMMIT =
-      execSync('git rev-parse HEAD');
-    process.env._VERSION_GIT_BRANCH =
-      execSync('git rev-parse --abbrev-ref HEAD');
-  }
-  catch (e) {
-    debug('Could not load git information.');
-  }
 
   process.env.ROOT_DIR = applicationRoot;
   debug(process.env);
@@ -78,5 +88,13 @@ function readDotEnvConfigs(debugName) {
     }
   }
 }
+
+/**
+ * Restores process.env to its original state.
+ */
+readDotEnvConfigs.restore = function () {
+  process.env = originalEnv;
+  hasLoadedEnvironment = false;
+};
 
 module.exports = readDotEnvConfigs;
