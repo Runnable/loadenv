@@ -16,7 +16,7 @@ var execSync = require('exec-sync');
 var applicationRoot = require('app-root-path').toString();
 var env = process.env.NODE_ENV;
 var exists = require('101/exists');
-var createCount = require('callback-count');
+var async = require('async');
 
 /**
  * Ensures that the environment variables will only be loaded the
@@ -29,54 +29,53 @@ var hasLoadedEnvironment = false;
  * Loads environment varibles defined in `config/.env*`.
  * @param {string} [debugName] Name to use when outputting resulting environment
  *  via debug. Defaults to 'loadenv'.
- * @param {boolean} [addGitInfo] If `true` then git information will also
- *   be pulled into the process env. Defaults to true.
  */
-function readDotEnvConfigs(debugName, addGitInfo) {
+function readDotEnvConfigs(debugName) {
   // Skip if environment has already been loaded.
   if (hasLoadedEnvironment === true) {
     return;
   }
   hasLoadedEnvironment = true;
 
-  addGitInfo = exists(addGitInfo) ? addGitInfo : true;
   var debug = require('debug')(debugName || 'loadenv');
 
   // Load appropriate environment variables from `/configs`
-  var count = createCount(2, finalize);
-  loadEnv('.env', count.next);
-  loadEnv('.env.' + env, count.next);
+  loadEnv('.env.' + env);
+  loadEnv('.env');
 
-  function loadEnv(name, cb) {
-    var fullEnvPath = path.resolve(applicationRoot, './configs/' + name);
-    fs.stat(fullEnvPath, function (err, stat) {
-      if (err) {
-        debug('Error loading ' + fullEnvPath + ', skipping.');
-      }
-      else {
-        dotenv.config({ path: fullEnvPath });
-      }
-      cb();
-    });
+  // Finalize the load
+  process.env = eson()
+    .use(function (key, val) {
+      return !isNaN(val) ? parseInt(val) : val;
+    })
+    .parse(JSON.stringify(process.env));
+
+  try {
+    process.env._VERSION_GIT_COMMIT =
+      execSync('git rev-parse HEAD');
+    process.env._VERSION_GIT_BRANCH =
+      execSync('git rev-parse --abbrev-ref HEAD');
+  }
+  catch (e) {
+    debug('Could not load git information.');
   }
 
-  function finalize(err) {
-    if (err) { return debug(err); }
-    process.env = eson()
-      .use(function (key, val) {
-        return !isNaN(val) ? parseInt(val) : val;
-      })
-      .parse(JSON.stringify(process.env));
+  process.env.ROOT_DIR = applicationRoot;
+  debug(process.env);
 
-    if (addGitInfo) {
-      process.env._VERSION_GIT_COMMIT =
-        execSync('git rev-parse HEAD');
-      process.env._VERSION_GIT_BRANCH =
-        execSync('git rev-parse --abbrev-ref HEAD');
+  /**
+   * Loads a specific environment with the given name.
+   * @param {string} name Name of the environment file to load.
+   */
+  function loadEnv(name) {
+    var fullEnvPath = path.resolve(applicationRoot, './configs/' + name);
+    try {
+      fs.statSync(fullEnvPath);
+      dotenv.config({ path: fullEnvPath });
     }
-
-    process.env.ROOT_DIR = applicationRoot;
-    debug(process.env);
+    catch (e) {
+      debug('Could not load environment "' + fullEnvPath + '"');
+    }
   }
 }
 
