@@ -4,6 +4,8 @@
 ![Dependency Status](https://david-dm.org/Runnable/loadenv.svg)
 ![devDependency Status](https://david-dm.org/Runnable/loadenv/dev-status.svg)
 
+[![NPM](https://nodei.co/npm/loadenv.png?compact=true)](https://nodei.co/npm/loadenv)
+
 Utility for loading environment variables from a project's `configs/` directory.
 
 ## How it works
