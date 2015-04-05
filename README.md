@@ -63,6 +63,15 @@ No matter how many times you include the module, the environment is only loaded
 once. So feel free to sprinkle loads wherever they might be needed to make your
 code as modular as possible.
 
+## Developing
+
+If you want to contribute, make sure that all tests pass with 100% coverage
+before submitting a pull request. Here's how to run the tests:
+
+```
+npm test
+```
+
 
 ## LICENSE
 
