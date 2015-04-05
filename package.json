@@ -2,6 +2,10 @@
   "name": "loadenv",
   "version": "1.0.1",
   "description": "Loads environment variables from project's `./configs/` directory based on NODE_ENV.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Runnable/loadenv.git"
+  },
   "main": "index.js",
   "scripts": {
     "lint": "jshint index.js",
