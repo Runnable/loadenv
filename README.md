@@ -1,4 +1,9 @@
 # loadenv
+
+![Build Status](https://travis-ci.org/Runnable/loadenv.svg?branch=master)
+![Dependency Status](https://david-dm.org/Runnable/loadenv.svg)
+![devDependency Status](https://david-dm.org/Runnable/loadenv/dev-status.svg)
+
 Utility for loading environment variables from a project's `configs/` directory.
 
 ## How it works
