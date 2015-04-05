@@ -1,5 +1,12 @@
 'use strict';
 
+var fs = require('fs');
+var path = require('path');
+var dotenv = require('dotenv');
+var eson = require('eson');
+var exists = require('101/exists');
+var clone = require('clone');
+
 /**
  * Reads .env configs from your app's `configs/` directory and loads them into
  * the process environment (via dotenv). Additionally checks for a `NODE_ENV`
@@ -7,13 +14,7 @@
  * @module loadenv
  * @author Ryan Sandor Richards, Anand Patel
  */
-
-var fs = require('fs');
-var path = require('path');
-var dotenv = require('dotenv');
-var eson = require('eson');
-var exists = require('101/exists');
-var clone = require('clone');
+module.exports = readDotEnvConfigs;
 
 /**
  * Application root directory.
@@ -49,7 +50,7 @@ var hasLoadedEnvironment = false;
  */
 function readDotEnvConfigs(debugName, ignoreNodeEnv) {
   // Skip if environment has already been loaded.
-  if (hasLoadedEnvironment === true) {
+  if (hasLoadedEnvironment) {
     return;
   }
   hasLoadedEnvironment = true;
@@ -96,5 +97,3 @@ readDotEnvConfigs.restore = function () {
   process.env = originalEnv;
   hasLoadedEnvironment = false;
 };
-
-module.exports = readDotEnvConfigs;
