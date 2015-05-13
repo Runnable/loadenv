@@ -13,7 +13,8 @@ Utility for loading environment variables from a project's `configs/` directory.
 The module first finds your application's root directory and then attempts to
 load environment variables found in the `configs/.env` file. Then, if a specific
 `NODE_ENV` exists in the environment at run time it additionally loads variables
-from the `configs/.env.${NODE_ENV}` file.
+from the `configs/.env.${NODE_ENV}` file. *Note*: This module will not work if
+installed globally [`npm install loadenv -g`].
 
 ### An Example
 
