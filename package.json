@@ -9,7 +9,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "jshint index.js",
-    "test": "lab -v -c -a"
+    "test": "lab -v -c -a code"
   },
   "author": "Ryan Sandor Richards <ryan@runnable.com> (http://www.runnable.com)",
   "license": "MIT",
