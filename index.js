@@ -20,7 +20,7 @@ module.exports = readDotEnvConfigs;
  * Application root directory.
  * @type {string}
  */
-var applicationRoot = require('app-root-path').toString();
+var applicationRoot = __dirname + '/../../';
 
 /**
  * Specified node environment.
@@ -79,6 +79,7 @@ function readDotEnvConfigs(debugName, ignoreNodeEnv) {
    * @param {string} name Name of the environment file to load.
    */
   function loadEnv(name) {
+    console.log('aprr', applicationRoot);
     var fullEnvPath = path.resolve(applicationRoot, './configs/' + name);
     try {
       fs.statSync(fullEnvPath);
