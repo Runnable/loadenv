@@ -9,7 +9,11 @@ var expect = Code.expect;
 
 var sinon = require('sinon');
 var dotenv = require('dotenv');
-var loadenv = require('../index.js');
+var rewire = require('rewire');
+var loadenv = rewire('../index.js');
+
+// simulate applicationRoot value as it would be derrived if module was in node_modules/
+loadenv.__set__('applicationRoot', require('app-root-path')+'/node_modules/loadenv/../../');
 
 describe('loadenv', function() {
   afterEach(function (done) {
@@ -35,7 +39,7 @@ describe('loadenv', function() {
   it('should not load environment after already loaded', function(done) {
     loadenv();
     var original = process.env.SPECIAL_D;
-    process.env.SPECIAL_D = 'different'
+    process.env.SPECIAL_D = 'different';
     loadenv();
     expect(process.env.SPECIAL_D).to.equal('different');
     done();

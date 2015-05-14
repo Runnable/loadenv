@@ -20,7 +20,7 @@ module.exports = readDotEnvConfigs;
  * Application root directory.
  * @type {string}
  */
-var applicationRoot = require('app-root-path').toString();
+var applicationRoot = __dirname + '/../../';
 
 /**
  * Specified node environment.
