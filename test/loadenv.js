@@ -12,8 +12,11 @@ var dotenv = require('dotenv');
 var rewire = require('rewire');
 var loadenv = rewire('../index.js');
 
-// simulate applicationRoot value as it would be derrived if module was in node_modules/
-loadenv.__set__('applicationRoot', require('app-root-path')+'/node_modules/loadenv/../../');
+// Set applicationRoot value as it would be if in `node_modules/`
+loadenv.__set__(
+  'applicationRoot',
+  require('app-root-path')+'/node_modules/loadenv/../../'
+);
 
 describe('loadenv', function() {
   afterEach(function (done) {
@@ -22,10 +25,11 @@ describe('loadenv', function() {
   });
 
   it('should load default environment variables', function (done) {
-    loadenv('loadenv', true);
+    loadenv({ ignoreNodeEnv: true });
     expect(process.env.DEFAULT_A).to.equal(123);
     expect(process.env.DEFAULT_B).to.equal('HELLO WORLD');
     expect(process.env.DEFAULT_C).to.equal('E=MC^2');
+    expect(process.env.DEFAULT_D).to.equal(56.97);
     done();
   });
 
@@ -58,5 +62,42 @@ describe('loadenv', function() {
     }
     dotenv.config.restore();
     done(error);
+  });
+
+  it('should load the project environment', function(done) {
+    loadenv({
+      project: 'sub-project',
+      ignoreNodeEnv: true
+    });
+    expect(process.env.DEFAULT_A).to.equal(123);
+    expect(process.env.DEFAULT_B).to.equal('HELLO WORLD');
+    expect(process.env.DEFAULT_C).to.equal('wow');
+    expect(process.env.DEFAULT_D).to.equal(56.97);
+    done();
+  });
+
+  it('should load the project with a node environment', function(done) {
+    loadenv({ project: 'sub-project' });
+    expect(process.env.DEFAULT_A).to.equal(123);
+    expect(process.env.DEFAULT_B).to.equal('HELLO TEST');
+    expect(process.env.DEFAULT_C).to.equal('wow');
+    expect(process.env.DEFAULT_D).to.equal(56.97);
+    expect(process.env.DEFAULT_E).to.equal("ONLY IN PROJECT TEST");
+    expect(process.env.SPECIAL_D).to.equal('THIS IS PROJECT TEST');
+    done();
+  });
+
+  it('should throw when given a non-string project', function(done) {
+    expect(function () {
+      loadenv({ project: 203 });
+    }).to.throw(/option must be a string/);
+    done();
+  });
+
+  it('should remove trailing slashes from project paths', function(done) {
+    loadenv({ project: 'sub-project///' });
+    expect(process.env.DEFAULT_E).to.equal("ONLY IN PROJECT TEST");
+    expect(process.env.SPECIAL_D).to.equal('THIS IS PROJECT TEST');
+    done();
   });
 });
