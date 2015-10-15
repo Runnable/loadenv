@@ -116,6 +116,7 @@ function readDotEnvConfigs(opts) {
   function loadEnv(name) {
     var fullEnvPath = path.resolve(applicationRoot, './configs/' + name);
     try {
+      debug('Loaded environment: ' + fullEnvPath);
       fs.statSync(fullEnvPath);
       dotenv.config({ path: fullEnvPath });
     }

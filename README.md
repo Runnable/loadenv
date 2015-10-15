@@ -59,7 +59,7 @@ from the `configs/` files. By default it uses `debug('loadenv')` but you can
 override this by calling into the module with a custom name, like so:
 
 ```js
-require('loadenv')('myapp:env');
+require('loadenv')({ debugName: 'myapp:env' });
 ```
 
 If you were to do so then the module would use `debug('myapp:env')` to log the
