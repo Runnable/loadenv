@@ -130,6 +130,8 @@ function readDotEnvConfigs(opts) {
  * Restores process.env to its original state.
  */
 readDotEnvConfigs.restore = function () {
-  process.env = originalEnv;
-  hasLoadedEnvironment = false;
+  if (hasLoadedEnvironment) {
+    process.env = originalEnv;
+    hasLoadedEnvironment = false;
+  }
 };

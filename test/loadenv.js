@@ -24,6 +24,13 @@ describe('loadenv', function() {
     done();
   });
 
+  it('should not try to restore the environment if it has not been loaded', function(done) {
+    var env = process.env;
+    loadenv.restore();
+    expect(process.env).to.equal(env);
+    done();
+  });
+
   it('should load default environment variables', function (done) {
     loadenv({ ignoreNodeEnv: true });
     expect(process.env.DEFAULT_A).to.equal(123);
