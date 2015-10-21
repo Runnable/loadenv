@@ -1,6 +1,6 @@
 {
   "name": "loadenv",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Loads environment variables from project's `./configs/` directory based on NODE_ENV.",
   "repository": {
     "type": "git",
