@@ -5,6 +5,6 @@ node_js:
 - '4.2'
 - '5'
 matrix:
-  allow_failure:
+  allow_failures:
   - node_js: '5'
 sudo: false
