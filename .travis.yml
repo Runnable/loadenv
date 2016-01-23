@@ -1,5 +1,10 @@
 language: node_js
 node_js:
-  - "0.12"
-  - "0.11"
-  - "0.10"
+- '0.10'
+- '0.12'
+- '4.2'
+- '5'
+matrix:
+  allow_failure:
+  - node_js: '5'
+sudo: false
