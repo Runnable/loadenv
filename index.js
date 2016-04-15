@@ -64,6 +64,11 @@ function readDotEnvConfigs(opts) {
   hasLoadedEnvironment = true;
   originalEnv = clone(process.env);
 
+  if (isString(opts)) {
+    var debugName = opts
+    opts = { debugName: debugName }
+  }
+
   opts = opts || {};
   defaults(opts, {
     debugName: 'loadenv',
@@ -99,7 +104,7 @@ function readDotEnvConfigs(opts) {
   // Ensure the environment has the correct types for ints and floats
   process.env = eson()
     .use(function (key, val) {
-      if (val.match(/^\s*[+\-]?[0-9]+\s*$/)) {
+      if (isString(val) && val.match(/^\s*[+\-]?[0-9]+\s*$/)) {
         return parseInt(val);
       }
       return !isNaN(val) ? parseFloat(val) : val;

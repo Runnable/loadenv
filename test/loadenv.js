@@ -31,6 +31,21 @@ describe('loadenv', function() {
     done();
   });
 
+  it('should accept string arguments as debugName option', function (done) {
+    expect(function () {
+      loadenv('wowza')
+    }).to.not.throw()
+    done()
+  })
+
+  it('should not throw on a null env value', function(done) {
+    process.env.neat = null;
+    expect(function () {
+      loadenv({ ignoreNodeEnv: true });
+    }).to.not.throw();
+    done();
+  });
+
   it('should load default environment variables', function (done) {
     loadenv({ ignoreNodeEnv: true });
     expect(process.env.DEFAULT_A).to.equal(123);
