@@ -64,6 +64,11 @@ function readDotEnvConfigs(opts) {
   hasLoadedEnvironment = true;
   originalEnv = clone(process.env);
 
+  if (isString(opts)) {
+    var debugName = opts
+    opts = { debugName: debugName }
+  }
+
   opts = opts || {};
   defaults(opts, {
     debugName: 'loadenv',
